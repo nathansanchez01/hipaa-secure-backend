@@ -1,11 +1,10 @@
 import express from 'express';
 import asyncHandler from 'express-async-handler';
-import { requireAuth, requireRole } from '../middleware/auth.js';
-import { getAuditLogs, getAuditLogsByUser, getAuditLogsByPatient } from '../services/audit.js';
+import { requireAuth, requireRole } from '../middleware/auth';
+import { getAuditLogs, getAuditLogsByUser, getAuditLogsByPatient } from '../services/audit';
 
 const router = express.Router();
 
-// Get all audit logs (admin only)
 router.get(
   '/logs',
   requireAuth,
@@ -16,7 +15,6 @@ router.get(
   })
 );
 
-// Get audit logs for a specific user (admin only)
 router.get(
   '/logs/user/:userId',
   requireAuth,
@@ -28,7 +26,6 @@ router.get(
   })
 );
 
-// Get audit logs for a specific patient (admin only)
 router.get(
   '/logs/patient/:patientId',
   requireAuth,
@@ -40,4 +37,4 @@ router.get(
   })
 );
 
-export default router; 
+export default router;

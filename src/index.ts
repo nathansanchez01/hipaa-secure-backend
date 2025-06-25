@@ -1,8 +1,12 @@
 import express from 'express';
 import cors from 'cors';
-import authRouter from './api/auth.js';
-import patientsRouter from './api/patients.js';
-import auditRouter from './api/audit.js';
+import authRouter from './api/auth';
+import patientsRouter from './api/patients';
+import auditRouter from './api/audit';
+
+
+// Ensure the users table is created before any routes
+// await db.select().from(users);
 
 const app = express();
 app.use(cors());
@@ -17,6 +21,10 @@ app.use('/api/patients', patientsRouter);
 app.use('/api/audit', auditRouter);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-}); 
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
+
+export default app;

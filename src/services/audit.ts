@@ -1,5 +1,5 @@
-import { db } from '../db/index.js';
-import { auditLogs } from '../db/schema.js';
+import { db } from '../db/index';
+import { auditLogs } from '../db/schema';
 import { eq } from 'drizzle-orm';
 
 export interface AuditLogData {
@@ -12,17 +12,18 @@ export interface AuditLogData {
 
 export async function logAuditAction(data: AuditLogData) {
   try {
+    const estTimestamp = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
     await db.insert(auditLogs).values({
       userId: data.userId,
       role: data.role,
       action: data.action,
       patientId: data.patientId ?? null,
-      timestamp: new Date().toISOString(),
+      timestamp: estTimestamp,
     });
     console.log(`Audit log: User ${data.userId} (${data.role}) performed ${data.action}${data.patientId ? ` on patient ${data.patientId}` : ''}`);
   } catch (error) {
     console.error('Failed to log audit action:', error);
-    
+
   }
 }
 
