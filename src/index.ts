@@ -1,8 +1,8 @@
 import express from 'express';
 import cors from 'cors';
-import authRouter from './api/auth';
-import patientsRouter from './api/patients';
-import auditRouter from './api/audit';
+import authRouter from './routes/auth';
+import patientsRouter from './routes/patients';
+import auditRouter from './routes/audit';
 
 
 // Ensure the users table is created before any routes
