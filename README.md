@@ -43,7 +43,8 @@ Follow these steps to set up and run the backend server locally.
 Navigate to the `backend` directory and install the required dependencies:
 
 ```bash
-cd backend
+git clone https://github.com/nathansanchez01/hipaa-secure-backend.git
+cd hipaa-secure-backend
 npm install
 ```
 
