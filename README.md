@@ -58,9 +58,14 @@ npx drizzle-kit push
 ```
 This command reads the schema definition from `src/db/schema.ts` and applies it to the SQLite database.
 
-### 4. Seeding the Admin User
+### 4. Seed the Database
 
-The application signup form only allows the creation of "clinician" roles. The first "admin" user must be created manually. While a dedicated seed script is pending, you can add one by temporarily modifying the `src/api/auth.ts` file to allow admin registration and restarting the server.
+The application signup form only allows the creation of "clinician" roles. To create the default `admin` user, run the seed script:
+
+```bash
+npm run seed
+```
+This will create an `admin` user with a default password. You can view/change the credentials in the `src/db/seed.ts` file. The script is safe to run multiple times; it will not create a duplicate admin user.
 
 ### 5. Running the Development Server
 
