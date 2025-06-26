@@ -7,7 +7,8 @@ import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
 
 const clinician = { username: 'clinician1', password: 'testpass', role: 'clinician' };
 const admin = { username: 'admin1', password: 'adminpass', role: 'admin' };
-const patient = {
+
+const basePatient = {
   fullName: 'John Doe',
   dob: '1990-01-01',
   ssn: '123-45-6789',
@@ -17,24 +18,29 @@ const patient = {
 
 let clinicianToken: string;
 let adminToken: string;
+let clinicianId: number;
 
 beforeAll(async () => {
-  // 1. Run migrations
+  // 1. Run DB migrations
   migrate(db, { migrationsFolder: './drizzle' });
 
-  // 2. Clean up
+  // 2. Clean up tables
   await db.delete(patients);
   await db.delete(users);
 
-  // 3. Insert users
+  // 3. Insert clinician and admin
   const hashedClinician = await bcrypt.hash(clinician.password, 10);
   const hashedAdmin = await bcrypt.hash(admin.password, 10);
-  await db.insert(users).values([
+
+  const insertedUsers = await db.insert(users).values([
     { username: clinician.username, passwordHash: hashedClinician, role: clinician.role },
     { username: admin.username, passwordHash: hashedAdmin, role: admin.role }
-  ]);
+  ]).returning();
 
-  // 4. Login to get tokens
+  // 4. Save clinician ID for patient creation
+  clinicianId = insertedUsers.find(u => u.role === 'clinician')!.id;
+
+  // 5. Login to get tokens
   const clinRes = await request(app).post('/api/auth/login').send({
     username: clinician.username,
     password: clinician.password
@@ -54,7 +60,7 @@ describe('Patient RBAC and SSN Masking', () => {
     const res = await request(app)
       .post('/api/patients/create')
       .set('Authorization', adminToken)
-      .send(patient);
+      .send({ ...basePatient, creator_id: clinicianId }); // still needs valid creator_id
     expect(res.status).toBe(403);
     expect(res.body.error).toMatch(/Only clinicians/);
   });
@@ -63,7 +69,7 @@ describe('Patient RBAC and SSN Masking', () => {
     const res = await request(app)
       .post('/api/patients/create')
       .set('Authorization', clinicianToken)
-      .send(patient);
+      .send({ ...basePatient, creator_id: clinicianId }); // required by FK constraint
     expect(res.status).toBe(201);
     expect(res.body.message).toBe('Patient created');
   });
