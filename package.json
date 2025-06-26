@@ -4,10 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts",
     "test": "jest",
     "generate:migration": "drizzle-kit generate:sqlite",
-    "migrate": "drizzle-kit push:sqlite"
+    "migrate": "drizzle-kit push:sqlite",
+    "seed": "tsx src/db/seed.ts"
   },
   "keywords": [],
   "author": "",
